@@ -8,12 +8,12 @@ The dependencies are defined on `go.mod`.
 
 ## Roadmap
 - [X] Implement Glicko2.
-- [ ] Define which type of sport will be the focus of the application of the
-  Glicko2.
-    - `Initial idea is to be CS:GO.`
-- [ ] Implement fetcher to get Competitors information to try with the ranking
-  with real data.
-    - [ ] Decide main source of information.
+- [X] Define which type of sport will be the focus of the application of the
+  Glicko2. (CS:GO)
+- [X] Implement fetcher to get basic Competitors/Matches information.
+    - [X] Decide main source of information.
+        - (TheScore)[https://www.thescoreesports.com/csgo]
+- [ ] Try the ranking with real data.
 - [ ] Create a persistence layer to store the Competitors rankings and periods.
 - [ ] Tune Glicko2 formulas to accept importance/difficulty of the tournaments 
   to which the Matches belongs.
