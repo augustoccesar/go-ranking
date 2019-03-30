@@ -1,3 +1,6 @@
+// Reference to variables described on the specification can be found by
+// comments with `doc-ref`.
+
 package structs
 
 import (
@@ -112,9 +115,6 @@ func (rt *RatingPeriod) addNewCompetitors(competitors ...*Competitor) {
 // pretty straightforward code-wise and any attempt of document the actual
 // formulas would be a repetition of the specification. If any questions
 // related to them occur, please check the glicko2.pdf located on this project.
-// Observation:
-// 		For the variables described on the specification, look for `doc-ref` on
-//		the methods bellow.
 
 func v(competitor *Competitor) float64 {
 	agg := 0.0

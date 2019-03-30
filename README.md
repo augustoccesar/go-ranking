@@ -29,6 +29,8 @@ this project ([link](./glicko2.pdf)).
   on the data from the [specification](./glicko2.pdf), which contains multiple
   `floats round`, that doesn't make sense to do on code. So the tests with 
   margins are to consider that small difference.
+- Multiple variables referenced on the [specification](./glicko2.pdf) can be
+  found on comments on the code with the prefix `doc-ref`.
 
 ### Execute the tests
 ```
