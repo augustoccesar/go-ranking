@@ -12,7 +12,7 @@ The dependencies are defined on `go.mod`.
   Glicko2. (CS:GO)
 - [X] Implement fetcher to get basic Competitors/Matches information.
     - [X] Decide main source of information.
-        - (TheScore)[https://www.thescoreesports.com/csgo]
+        - [TheScore](https://www.thescoreesports.com/csgo)
 - [ ] Try the ranking with real data.
 - [ ] Create a persistence layer to store the Competitors rankings and periods.
 - [ ] Tune Glicko2 formulas to accept importance/difficulty of the tournaments 
