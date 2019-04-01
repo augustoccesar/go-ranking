@@ -1,4 +1,4 @@
-package structs
+package glicko
 
 // Rating is the struct that holds the Glicko2 data.
 type Rating struct {
@@ -22,4 +22,9 @@ func BuildRating(args ...float64) *Rating {
 	rating.G2RatingDerivation = rating.RatingDerivation / 173.7178
 
 	return rating
+}
+
+// BuildDefaultRating creates a Rating with default values.
+func BuildDefaultRating() *Rating {
+	return BuildRating(1500, 350, 0.06)
 }

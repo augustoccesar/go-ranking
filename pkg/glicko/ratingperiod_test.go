@@ -1,4 +1,4 @@
-package structs
+package glicko
 
 import (
 	"math"
@@ -8,12 +8,12 @@ import (
 )
 
 func mockRatingPeriod(t *testing.T) *RatingPeriod {
-	competitor1 := BuildCompetitor(1, BuildRating(1500, 200, 0.06))
-	competitor2 := BuildCompetitor(2, BuildRating(1400, 30, 0.06))
-	competitor3 := BuildCompetitor(3, BuildRating(1550, 100, 0.06))
-	competitor4 := BuildCompetitor(4, BuildRating(1700, 300, 0.06))
+	competitor1 := BuildRankableCompetitor(1, BuildRating(1500, 200, 0.06))
+	competitor2 := BuildRankableCompetitor(2, BuildRating(1400, 30, 0.06))
+	competitor3 := BuildRankableCompetitor(3, BuildRating(1550, 100, 0.06))
+	competitor4 := BuildRankableCompetitor(4, BuildRating(1700, 300, 0.06))
 
-	ratingPeriod := BuildRatingPeriod()
+	ratingPeriod := BuildRatingPeriod(1)
 
 	ratingPeriod.AddNewMatch(competitor1, competitor2, 1)
 	ratingPeriod.AddNewMatch(competitor1, competitor3, 3)
@@ -23,10 +23,10 @@ func mockRatingPeriod(t *testing.T) *RatingPeriod {
 }
 
 func TestAddNewMatch(t *testing.T) {
-	competitor1 := BuildCompetitor(1, BuildRating(0.0, 0.0, 0.0))
-	competitor2 := BuildCompetitor(2, BuildRating(0.0, 0.0, 0.0))
+	competitor1 := BuildRankableCompetitor(1, BuildRating(0.0, 0.0, 0.0))
+	competitor2 := BuildRankableCompetitor(2, BuildRating(0.0, 0.0, 0.0))
 
-	ratingPeriod := BuildRatingPeriod()
+	ratingPeriod := BuildRatingPeriod(1)
 
 	ratingPeriod.AddNewMatch(competitor1, competitor2, 1)
 

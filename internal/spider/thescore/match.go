@@ -35,7 +35,11 @@ func (m *Match) extractTeamsIds() (homeID, awayID, winnerID int) {
 
 	homeID, _ = strconv.Atoi(homeResult[1])
 	awayID, _ = strconv.Atoi(awayResult[1])
-	winnerID, _ = strconv.Atoi(winnerResult[1])
+	if m.TieMatch {
+		winnerID = -1
+	} else {
+		winnerID, _ = strconv.Atoi(winnerResult[1])
+	}
 
 	return homeID, awayID, winnerID
 }

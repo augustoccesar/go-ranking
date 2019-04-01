@@ -27,6 +27,7 @@ func BuildPeriodData(
 		Teams:     teams,
 	}
 
+	periodData.purgeBadMatches()
 	periodData.populateCache()
 	periodData.assignTeamsToMatches()
 
@@ -55,6 +56,20 @@ func (pd *PeriodData) assignTeamsToMatches() {
 		homeID, awayID, winnerID := match.extractTeamsIds()
 		match.Home = pd.teamsCache[homeID]
 		match.Away = pd.teamsCache[awayID]
-		match.Winner = pd.teamsCache[winnerID]
+		if winnerID == -1 {
+			match.Winner = nil
+		} else {
+			match.Winner = pd.teamsCache[winnerID]
+		}
 	}
+}
+
+func (pd *PeriodData) purgeBadMatches() {
+	goodMatches := []*Match{}
+	for _, match := range pd.Matches {
+		if match.Status == "post-match" {
+			goodMatches = append(goodMatches, match)
+		}
+	}
+	pd.Matches = goodMatches
 }

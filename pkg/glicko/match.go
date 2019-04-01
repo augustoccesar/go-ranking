@@ -1,15 +1,15 @@
-package structs
+package glicko
 
-// Match is the struct that hold the information related to a Match.
-type Match struct {
-	Home   *Competitor
-	Away   *Competitor
+// RankableMatch is the struct that hold the information related to a Match.
+type RankableMatch struct {
+	Home   *RankableCompetitor
+	Away   *RankableCompetitor
 	Winner int
 }
 
-// BuildMatch build a Match based on the Competitors and the ID of the Winner.
-func BuildMatch(home *Competitor, away *Competitor, winner int) *Match {
-	return &Match{
+// BuildRankableMatch build a Match based on the Competitors and the ID of the Winner.
+func BuildRankableMatch(home *RankableCompetitor, away *RankableCompetitor, winner int) *RankableMatch {
+	return &RankableMatch{
 		Home:   home,
 		Away:   away,
 		Winner: winner,
@@ -18,7 +18,7 @@ func BuildMatch(home *Competitor, away *Competitor, winner int) *Match {
 
 // OpponentOf is used to find who is the opponent of a specific Competitor
 // inside a Match.
-func (m *Match) OpponentOf(competitor *Competitor) *Competitor {
+func (m *RankableMatch) OpponentOf(competitor *RankableCompetitor) *RankableCompetitor {
 	if m.Home.ID == competitor.ID {
 		return m.Away
 	}
@@ -27,7 +27,7 @@ func (m *Match) OpponentOf(competitor *Competitor) *Competitor {
 
 // CompetitorResult is used to get the result value that is expected by
 // Glicko2 formulas based on the result of the Match.
-func (m *Match) CompetitorResult(competitor *Competitor) float64 {
+func (m *RankableMatch) CompetitorResult(competitor *RankableCompetitor) float64 {
 	if m.Winner == -1 {
 		return 0.5 // Tie
 	} else if m.Winner == competitor.ID {
@@ -38,7 +38,7 @@ func (m *Match) CompetitorResult(competitor *Competitor) float64 {
 }
 
 // WinnerCompetitor is used to get the Competitor that won the Match.
-func (m *Match) WinnerCompetitor() *Competitor {
+func (m *RankableMatch) WinnerCompetitor() *RankableCompetitor {
 	if m.Home.ID == m.Winner {
 		return m.Home
 	} else if m.Away.ID == m.Winner {

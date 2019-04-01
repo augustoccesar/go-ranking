@@ -14,6 +14,7 @@ The dependencies are defined on `go.mod`.
     - [X] Decide main source of information.
         - [TheScore](https://www.thescoreesports.com/csgo)
 - [ ] Try the ranking with real data.
+    - [ ] Issue found: Needs to do one extra step if Team doesn't compete during a period.
 - [ ] Create a persistence layer to store the Competitors rankings and periods.
 - [ ] Tune Glicko2 formulas to accept importance/difficulty of the tournaments 
   to which the Matches belongs.

@@ -1,7 +1,7 @@
 // Reference to variables described on the specification can be found by
 // comments with `doc-ref`.
 
-package structs
+package glicko
 
 import (
 	"math"
@@ -10,16 +10,18 @@ import (
 // RatingPeriod holds information about the period to which the Glicko2
 // calculation will be based on.
 type RatingPeriod struct {
+	ID             int
 	SystemConstant float64
-	Matches        []*Match
-	Competitors    []*Competitor
+	Matches        []*RankableMatch
+	Competitors    []*RankableCompetitor
 }
 
 // BuildRatingPeriod build a default RatingPeriod.
-func BuildRatingPeriod() *RatingPeriod {
+func BuildRatingPeriod(id int) *RatingPeriod {
 	return &RatingPeriod{
+		ID:             id,
 		SystemConstant: 0.5, // doc-ref: τ
-		Matches:        []*Match{},
+		Matches:        []*RankableMatch{},
 	}
 }
 
@@ -27,7 +29,7 @@ func BuildRatingPeriod() *RatingPeriod {
 // While adding the Match to the RatingPeriod, already register the other
 // necessary data (link the Match also to the Competitors and "extract"
 // the Competitors to register on the RatingPeriod).
-func (rt *RatingPeriod) AddBuiltMatch(match *Match) {
+func (rt *RatingPeriod) AddBuiltMatch(match *RankableMatch) {
 	rt.Matches = append(rt.Matches, match)
 	rt.addNewCompetitors(match.Home, match.Away)
 	match.Home.AddMatch(match)
@@ -38,8 +40,8 @@ func (rt *RatingPeriod) AddBuiltMatch(match *Match) {
 // While adding the Match to the RatingPeriod, already register the other
 // necessary data (link the Match also to the Competitors and "extract"
 // the Competitors to register on the RatingPeriod).
-func (rt *RatingPeriod) AddNewMatch(home *Competitor, away *Competitor, winner int) {
-	match := &Match{
+func (rt *RatingPeriod) AddNewMatch(home *RankableCompetitor, away *RankableCompetitor, winner int) {
+	match := &RankableMatch{
 		Home:   home,
 		Away:   away,
 		Winner: winner,
@@ -85,13 +87,13 @@ func (rt *RatingPeriod) Calculate() {
 
 // addCompetitor adds a Competitor to the list of Competitors inside the
 // RatingPeriod.
-func (rt *RatingPeriod) addCompetitor(competitor *Competitor) {
+func (rt *RatingPeriod) addCompetitor(competitor *RankableCompetitor) {
 	rt.Competitors = append(rt.Competitors, competitor)
 }
 
 // containsCompetitor checks if the Competitor is already registered on the
 // list if Competitors of the RatingPeriod.
-func (rt *RatingPeriod) containsCompetitor(competitor *Competitor) bool {
+func (rt *RatingPeriod) containsCompetitor(competitor *RankableCompetitor) bool {
 	for _, c := range rt.Competitors {
 		if c.ID == competitor.ID {
 			return true
@@ -102,7 +104,7 @@ func (rt *RatingPeriod) containsCompetitor(competitor *Competitor) bool {
 
 // addNewCompetitors adds a "set" Competitor to the list of Competitors
 // inside the RatingPeriod.
-func (rt *RatingPeriod) addNewCompetitors(competitors ...*Competitor) {
+func (rt *RatingPeriod) addNewCompetitors(competitors ...*RankableCompetitor) {
 	for _, competitor := range competitors {
 		if !rt.containsCompetitor(competitor) {
 			rt.addCompetitor(competitor)
@@ -116,7 +118,7 @@ func (rt *RatingPeriod) addNewCompetitors(competitors ...*Competitor) {
 // formulas would be a repetition of the specification. If any questions
 // related to them occur, please check the glicko2.pdf located on this project.
 
-func v(competitor *Competitor) float64 {
+func v(competitor *RankableCompetitor) float64 {
 	agg := 0.0
 	for _, match := range competitor.Matches {
 		opponent := match.OpponentOf(competitor)
@@ -139,7 +141,7 @@ func e(baseCompetitorGlicko2Rating, opponentGlicko2Rating, opponentGlicko2Rating
 	return 1 / (1 + math.Exp(-g*(baseCompetitorGlicko2Rating-opponentGlicko2Rating)))
 }
 
-func delta(competitor *Competitor) float64 {
+func delta(competitor *RankableCompetitor) float64 {
 	v := v(competitor)
 	agg := 0.0
 	for _, match := range competitor.Matches {
@@ -155,11 +157,11 @@ func delta(competitor *Competitor) float64 {
 	return v * agg
 }
 
-func a(competitor *Competitor) float64 {
+func a(competitor *RankableCompetitor) float64 {
 	return math.Log(math.Pow(competitor.PreRating.Volatility, 2))
 }
 
-func f(x float64, competitor *Competitor, constant float64) float64 {
+func f(x float64, competitor *RankableCompetitor, constant float64) float64 {
 	deltaPow := math.Pow(delta(competitor), 2)
 	g2RatingDerivationPow := math.Pow(competitor.PreRating.G2RatingDerivation, 2)
 	ePow := math.Pow(math.E, x)
@@ -174,7 +176,7 @@ func f(x float64, competitor *Competitor, constant float64) float64 {
 }
 
 // constant: doc-ref: τ
-func newVolatility(competitor *Competitor, constant float64) float64 {
+func newVolatility(competitor *RankableCompetitor, constant float64) float64 {
 	var B float64
 	A := a(competitor)
 	v := v(competitor)
