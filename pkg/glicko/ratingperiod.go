@@ -5,12 +5,15 @@ package glicko
 
 import (
 	"math"
+	"time"
 )
 
 // RatingPeriod holds information about the period to which the Glicko2
 // calculation will be based on.
 type RatingPeriod struct {
 	ID             int
+	StartDate      time.Time
+	EndDate        time.Time
 	SystemConstant float64
 	Matches        []*RankableMatch
 	Competitors    []*RankableCompetitor
@@ -22,6 +25,18 @@ func BuildRatingPeriod(id int) *RatingPeriod {
 		ID:             id,
 		SystemConstant: 0.5, // doc-ref: τ
 		Matches:        []*RankableMatch{},
+	}
+}
+
+// BuildRatingPeriodWithTime build a default RatingPeriod with time to start
+// and end.
+func BuildRatingPeriodWithTime(id int, startDate time.Time, endDate time.Time) *RatingPeriod {
+	return &RatingPeriod{
+		ID:             id,
+		SystemConstant: 0.5, // doc-ref: τ
+		Matches:        []*RankableMatch{},
+		StartDate:      startDate,
+		EndDate:        endDate,
 	}
 }
 

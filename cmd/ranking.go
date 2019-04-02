@@ -28,7 +28,7 @@ type InputParams struct {
 	Source         string
 	StartDate      string
 	EndDate        string
-	PeriodDuration int64
+	PeriodDuration int
 }
 
 func main() {
@@ -60,7 +60,7 @@ func main() {
 			Usage:       "Limit date of the data.",
 			Destination: &inputParams.EndDate,
 		},
-		cli.Int64Flag{
+		cli.IntFlag{
 			Name:        "period_duration",
 			Value:       7,
 			Usage:       "Length in days of the Rating Period.",
@@ -74,23 +74,41 @@ func main() {
 		switch inputParams.Source {
 		case "thescore":
 			daysGap := parsedEndDate.Sub(parsedStartDate).Hours() / 24
-			periods := math.Ceil(daysGap / float64(inputParams.PeriodDuration))
+			periodsCount := math.Ceil(daysGap / float64(inputParams.PeriodDuration))
 			periodData, _ := thescore.FetchPeriodData(parsedStartDate, parsedEndDate)
 
 			teamsCache := map[int]*thescore.Team{}
 			teamsRating := map[int]*glicko.Rating{}
 
-			ratingPeriods := []*glicko.RatingPeriod{}
-			for i := 0; i < int(periods); i++ {
-				ratingPeriod := glicko.BuildRatingPeriod(i + 1)
+			sort.SliceStable(periodData.Matches, func(i, j int) bool {
+				return periodData.Matches[i].StartTime.Before(periodData.Matches[j].StartTime)
+			})
 
-				sort.SliceStable(periodData.Matches, func(i, j int) bool {
-					return periodData.Matches[i].StartTime.Before(periodData.Matches[j].StartTime)
-				})
+			ratingPeriods := []*glicko.RatingPeriod{}
+			for i := 0; i < int(periodsCount); i++ {
+				var ratingStartDate time.Time
+				var ratingEndDate time.Time
+				periodMatches := []*thescore.Match{}
+
+				if i == 0 {
+					ratingStartDate = parsedStartDate
+					ratingEndDate = parsedStartDate.AddDate(0, 0, inputParams.PeriodDuration)
+				} else {
+					lastPeriod := ratingPeriods[i-1]
+					ratingStartDate = lastPeriod.EndDate.Add(1 * time.Second)
+					ratingEndDate = ratingStartDate.AddDate(0, 0, inputParams.PeriodDuration)
+				}
+				ratingPeriod := glicko.BuildRatingPeriodWithTime(i+1, ratingStartDate, ratingEndDate)
+
+				for _, match := range periodData.Matches {
+					if match.StartTime.Before(ratingPeriod.EndDate) && match.StartTime.After(ratingPeriod.StartDate) {
+						periodMatches = append(periodMatches, match)
+					}
+				}
 
 				periodCompetitors := map[int]*glicko.RankableCompetitor{}
 
-				for _, match := range periodData.Matches {
+				for _, match := range periodMatches {
 					var home *glicko.RankableCompetitor
 					var away *glicko.RankableCompetitor
 					var homeRating *glicko.Rating
