@@ -5,6 +5,7 @@ learned.
 ## Dependencies
 The dependencies are defined on `go.mod`.
 - github.com/stretchr/testify v1.3.0
+- github.com/urfave/cli v1.20.0
 
 ## Roadmap
 - [X] Implement Glicko2.
@@ -33,9 +34,15 @@ this project ([link](./glicko2.pdf)).
 - Multiple variables referenced on the [specification](./glicko2.pdf) can be
   found on comments on the code with the prefix `doc-ref`.
 
+### Execute ranking cmd
+```
+cd ./ranking-go
+go run ./cmd/ranking.go
+```
+
 ### Execute the tests
 ```
-cd ./glicko2-go
+cd ./ranking-go
 go test ./...
 ```
 
