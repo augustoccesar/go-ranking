@@ -125,7 +125,7 @@ func main() {
 							ID:        match.Away.ID,
 							PreRating: awayRating,
 						}
-						periodCompetitors[match.Home.ID] = away
+						periodCompetitors[match.Away.ID] = away
 					}
 
 					// This can be improved
@@ -161,6 +161,20 @@ func main() {
 					}
 
 					log.Printf("\t#%d - %s - %f (%s%f)\n", i+1, teamsCache[competitor.ID].Name, competitor.PostRating.Rating, variationSymbol, variation)
+					log.Printf("\t\tMatches:")
+					for _, match := range competitor.Matches {
+						home := teamsCache[match.Home.ID]
+						away := teamsCache[match.Away.ID]
+						winnerName := ""
+
+						if match.Winner != -1 {
+							winnerName = teamsCache[match.Winner].Name
+						} else {
+							winnerName = ""
+						}
+
+						log.Printf("\t\t- %s x %s - Winner: %s", home.Name, away.Name, winnerName)
+					}
 				}
 				log.Printf("------------------------------------------------\n")
 			}
